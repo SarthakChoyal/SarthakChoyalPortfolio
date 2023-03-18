@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>YouTube Video Cards</title>
+    <style>
+      /* Basic card layout and styles */
+      .card {
+        display: inline-block;
+        width: 300px;
+        margin: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+
+      .card h3 {
+        margin: 10px;
+        font-size: 18px;
+      }
+
+      .card p {
+        margin: 10px;
+        font-size: 14px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="videos"></div>
+
+    <script>
+      // Load the YouTube API client library
+      function init() {
+        gapi.client.load('youtube', 'v3', function() {
+          // API key for accessing the YouTube Data API
+          var apiKey = 'AIzaSyDmdHSAxyTnP-TMb43tPWU3f423xVLhbgY';
+
+          // ID of the YouTube channel to fetch videos from
+          var channelId = 'https://www.youtube.com/@SarthakChoyal';
+
+          // Request parameters for fetching the most recent videos from the channel
+          var request = gapi.client.youtube.search.list({
+            part: 'snippet',
+            channelId: channelId,
+            type: 'video',
+            order: 'date',
+            maxResults: 6
+          });
+
+          // Execute the request and process the response
+          request.execute(function(response) {
+            var videos = response.items;
+            var videoCards = '';
+
+            // Build the HTML for each video card
+            for (var i = 0; i < videos.length; i++) {
+              var video = videos[i];
+              var videoId = video.id.videoId;
+              var title = video.snippet.title;
+              var thumbnailUrl = video.snippet.thumbnails.medium.url;
+              var description = video.snippet.description.substring(0, 100) + '...';
+              var videoUrl = 'https://www.youtube.com/watch?v=wfbpV8tGLnQ' + videoId;
+
+              var card = '<div class="card">' +
+                           '<a href="' + videoUrl + '">' +
+                             '<img src="' + thumbnailUrl + '">' +
+                             '<h3>' + title + '</h3>' +
+                             '<p>' + description + '</p>' +
+                           '</a>' +
+                         '</div>';
+
+              videoCards += card;
+            }
+
+            // Display the video cards in the HTML document
+            var videosDiv = document.getElementById('videos');
+            videosDiv.innerHTML = videoCards;
+          });
+        });
+      }
+    </script>
+
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>
+  </body>
+</html>
